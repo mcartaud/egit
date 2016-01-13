@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.core.runtime.jobs.ISchedulingRule;
 import org.eclipse.egit.core.Activator;
+import org.eclipse.egit.core.EclipseGitProgressTransformer;
 import org.eclipse.egit.core.internal.CoreText;
 import org.eclipse.egit.core.internal.job.RuleUtil;
 import org.eclipse.egit.core.internal.util.ProjectUtil;
@@ -180,7 +181,11 @@ public class MergeOperation implements IEGitOperation {
 				if (message != null)
 					merge.setMessage(message);
 				try {
-					mergeResult = merge.call();
+					// Every JGit command can receive a ProgressMonitor and
+					// return itself
+					mergeResult = merge.setProgressMonitor(
+							new EclipseGitProgressTransformer(mymonitor))
+							.call();
 					progress.worked(1);
 					if (MergeResult.MergeStatus.NOT_SUPPORTED.equals(mergeResult.getMergeStatus()))
 						throw new TeamException(new Status(IStatus.INFO, Activator.getPluginId(), mergeResult.toString()));
