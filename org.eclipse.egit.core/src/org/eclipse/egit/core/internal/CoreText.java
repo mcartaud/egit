@@ -245,6 +245,9 @@ public class CoreText extends NLS {
 	public static String MergeStrategy_UnloadError;
 
 	/** */
+	public static String MergeStrategy_JGit_Default;
+
+	/** */
 	public static String MoveDeleteHook_cannotModifyFolder;
 
 	/** */

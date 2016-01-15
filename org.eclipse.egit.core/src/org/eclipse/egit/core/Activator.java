@@ -248,18 +248,32 @@ public class Activator extends Plugin implements DebugOptionsListener {
 	 * @since 4.1
 	 */
 	public MergeStrategy getPreferredMergeStrategy() {
+		// Get preferences set by user in the UI
 		final IEclipsePreferences prefs = InstanceScope.INSTANCE
 				.getNode(Activator.getPluginId());
 		String preferredMergeStrategyKey = prefs.get(
 				GitCorePreferences.core_preferredMergeStrategy, null);
+
+		// Get preferences defined at eclipse startup with configuration files
+		if (preferredMergeStrategyKey == null
+				|| preferredMergeStrategyKey.isEmpty()) {
+			final IEclipsePreferences defaultPrefs = DefaultScope.INSTANCE
+					.getNode(Activator.getPluginId());
+			preferredMergeStrategyKey = defaultPrefs.get(
+					GitCorePreferences.core_preferredMergeStrategy, null);
+		}
 		if (preferredMergeStrategyKey != null
 				&& !preferredMergeStrategyKey.isEmpty()) {
 			MergeStrategy result = MergeStrategy.get(preferredMergeStrategyKey);
 			if (result != null) {
 				return result;
 			}
-			logError(NLS.bind(CoreText.Activator_invalidPreferredMergeStrategy,
-					preferredMergeStrategyKey), null);
+			if (!CoreText.MergeStrategy_JGit_Default
+					.equals(preferredMergeStrategyKey)) {
+				logError(NLS.bind(
+						CoreText.Activator_invalidPreferredMergeStrategy,
+						preferredMergeStrategyKey), null);
+			}
 		}
 		return null;
 	}
